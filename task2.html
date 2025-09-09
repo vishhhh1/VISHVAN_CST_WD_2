@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amazon Style Navigation Demo</title>
+  <style>
+    /* ===== CSS RESET ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    /* ===== NAVIGATION BAR ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 0.7rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #131921; /* Amazon dark navy */
+      transition: background-color 0.3s, box-shadow 0.3s;
+      z-index: 1000;
+    }
+
+    nav.scrolled {
+      background: #232f3e; /* darker shade on scroll */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ===== LOGO ===== */
+    nav .logo img {
+      height: 40px;
+      width: auto;
+      cursor: pointer;
+    }
+
+    /* ===== NAV LINKS ===== */
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      position: relative;
+    }
+
+    nav ul li {
+      position: relative; /* For tooltip positioning */
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #fff; /* White text */
+      font-size: 1rem;
+      position: relative;
+      padding: 0.3rem 0;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+
+    /* Hover underline animation */
+    nav ul li a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 2px;
+      background: #ff9900; /* Amazon orange */
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease-out;
+    }
+
+    nav ul li a:hover {
+      color: #ff9900; /* Amazon orange hover */
+    }
+
+    nav ul li a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* ===== TOOLTIP STYLES ===== */
+    nav ul li .tooltip {
+      position: absolute;
+      bottom: 120%; /* above the link */
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff9900; /* Amazon orange */
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, bottom 0.3s ease;
+      z-index: 10;
+    }
+
+    /* Tooltip arrow */
+    nav ul li .tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: #ff9900 transparent transparent transparent;
+    }
+
+    /* Show tooltip on hover */
+    nav ul li:hover .tooltip {
+      opacity: 1;
+      pointer-events: auto;
+      bottom: 140%; /* slight upward movement */
+    }
+
+    /* ===== HAMBURGER MENU FOR MOBILE ===== */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 4px;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background: #232f3e;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 220px;
+        padding: 1rem;
+        display: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      nav ul.active {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      /* Adjust tooltip for mobile */
+      nav ul li .tooltip {
+        bottom: auto;
+        top: 140%;
+        left: 0;
+        transform: translateX(0);
+        white-space: normal;
+        max-width: 200px;
+      }
+      nav ul li:hover .tooltip {
+        bottom: auto;
+        top: 160%;
+      }
+    }
+
+    /* ===== PAGE SECTIONS ===== */
+    section {
+      min-height: 100vh;
+      padding: 100px 40px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 1px solid #ccc;
+    }
+
+    section:nth-child(odd) {
+      background: linear-gradient(120deg, #f5f7fa, #c3cfe2);
+    }
+
+    section:nth-child(even) {
+      background: linear-gradient(120deg, #e2e2e2, #fefefe);
+    }
+
+    section h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #131921;
+    }
+
+    section p {
+      max-width: 600px;
+      margin-bottom: 1rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #131921;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    footer a {
+      color: #ff9900;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav id="navbar" role="navigation" aria-label="Primary Navigation">
+    <div class="logo">
+      <!-- Amazon Logo -->
+      <a href="#home">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Logo" />
+      </a>
+    </div>
+    <div class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" role="button" tabindex="0">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <ul id="nav-links">
+      <li>
+        <a href="#home" tabindex="0" aria-describedby="tooltip-home">Home</a>
+        <div class="tooltip" role="tooltip" id="tooltip-home">Return to the homepage</div>
+      </li>
+      <li>
+        <a href="#about" tabindex="0" aria-describedby="tooltip-about">About</a>
+        <div class="tooltip" role="tooltip" id="tooltip-about">Learn more about us</div>
+      </li>
+      <li>
+        <a href="#services" tabindex="0" aria-describedby="tooltip-services">Services</a>
+        <div class="tooltip" role="tooltip" id="tooltip-services">Explore what we offer</div>
+      </li>
+      <li>
+        <a href="#contact" tabindex="0" aria-describedby="tooltip-contact">Contact</a>
+        <div class="tooltip" role="tooltip" id="tooltip-contact">Get in touch with us</div>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ===== PAGE SECTIONS ===== -->
+  <section id="home" tabindex="-1">
+    <h1>Welcome to Amazon Styled Demo</h1>
+    <p>This page demonstrates an interactive navigation bar with an Amazon logo, dark background, and hover tooltips.</p>
+    <p>Scroll down to see the navigation bar change its style as you move through different sections.</p>
+  </section>
+
+  <section id="about" tabindex="-1">
+    <h1>About Us</h1>
+    <p>We are a fictional demo site inspired by Amazon’s design. Our goal is to show how professional navigation bars work in modern web development.</p>
+    <p>The navigation menu includes accessibility features, mobile responsiveness, and smooth hover animations.</p>
+  </section>
+
+  <section id="services" tabindex="-1">
+    <h1>Our Services</h1>
+    <p>We offer tutorials, UI design samples, and clean HTML/CSS/JS code examples for developers of all levels.</p>
+    <p>Whether you are a beginner or advanced developer, you can adapt this template for your own projects.</p>
+  </section>
+
+  <section id="contact" tabindex="-1">
+    <h1>Contact</h1>
+    <p>Want to collaborate, ask questions, or just connect?</p>
+    <p>Reach out via <a href="mailto:example@email.com">email</a> or through social platforms.</p>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>Made with ❤️ | Demo inspired by <a href="https://www.amazon.com" target="_blank">Amazon</a></p>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // Change nav background on scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Mobile hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    hamburger.addEventListener('click', () => {
+      const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+      hamburger.setAttribute('aria-expanded', !expanded);
+      navLinks.classList.toggle('active');
+    });
+
+    // Keyboard toggle (accessibility)
+    hamburger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        hamburger.click();
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
